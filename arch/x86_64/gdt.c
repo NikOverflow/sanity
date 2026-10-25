@@ -41,7 +41,7 @@ typedef struct {
 gdtEntry gdtEntries[3];
 gdtPointer gdtr;
 
-void set_gate(uint8_t number, uint32_t base, uint32_t limit, uint8_t access, uint8_t flags) {
+void set_gdt_gate(uint8_t number, uint32_t base, uint32_t limit, uint8_t access, uint8_t flags) {
     gdtEntries[number].limitLow = limit & 0xFFFF;
     gdtEntries[number].baseLow = base & 0xFFFF;
     gdtEntries[number].baseMiddle = (base >> 16) & 0xFF;
@@ -58,11 +58,11 @@ void init_gdt() {
     gdtr.base = gdtEntries;
 
     // null descriptor
-    set_gate(0, 0x00, 0x00, 0, 0);
+    set_gdt_gate(0, 0x00, 0x00, 0, 0);
     // kernel code segment (0x08)
-    set_gate(1, 0x00, 0xFFFF, GDT_ACCESS_PRESENT | GDT_ACCESS_CODE_SEGMENT | GDT_ACCESS_CODE_READABLE, GDT_FLAG_LONG_MODE | GDT_FLAG_GRANULARITY_4K);
+    set_gdt_gate(1, 0x00, 0xFFFF, GDT_ACCESS_PRESENT | GDT_ACCESS_CODE_SEGMENT | GDT_ACCESS_CODE_READABLE, GDT_FLAG_LONG_MODE | GDT_FLAG_GRANULARITY_4K);
     // kernel data segment (0x10)
-    set_gate(2, 0x00, 0xFFFF, GDT_ACCESS_PRESENT | GDT_ACCESS_DATA_SEGMENT | GDT_ACCESS_DATA_WRITABLE, GDT_FLAG_PROTECTED_MODE | GDT_FLAG_GRANULARITY_4K);
+    set_gdt_gate(2, 0x00, 0xFFFF, GDT_ACCESS_PRESENT | GDT_ACCESS_DATA_SEGMENT | GDT_ACCESS_DATA_WRITABLE, GDT_FLAG_PROTECTED_MODE | GDT_FLAG_GRANULARITY_4K);
 
     load_gdt(&gdtr);
 }

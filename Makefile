@@ -15,11 +15,13 @@ KERNEL_FILE := $(BUILD)/sanity-$(ARCH).elf
 ISO_FILE := $(BUILD)/sanity-$(ARCH).iso
 
 SOURCE_C_FILES := $(wildcard arch/$(ARCH)/*.c) $(wildcard bootloader/*.c) $(wildcard kernel/*.c)
+SOURCE_STUB_FILES := $(wildcard arch/$(ARCH)/*.S)
 SOURCE_ASM_FILES := $(wildcard arch/$(ARCH)/*.asm)
 
 OBJECT_C_FILES := $(patsubst %, $(BUILD)/%.o, $(SOURCE_C_FILES))
+OBJECT_STUB_FILES := $(patsubst %, $(BUILD)/%.o, $(SOURCE_STUB_FILES))
 OBJECT_ASM_FILES := $(patsubst %, $(BUILD)/%.o, $(SOURCE_ASM_FILES))
-OBJECT_FILES := $(OBJECT_C_FILES) $(OBJECT_ASM_FILES)
+OBJECT_FILES := $(OBJECT_C_FILES) $(OBJECT_STUB_FILES) $(OBJECT_ASM_FILES)
 
 build: $(KERNEL_FILE)
 
@@ -41,6 +43,10 @@ $(ISO_FILE): $(KERNEL_FILE)
 	xorriso -as mkisofs --efi-boot boot/limine/limine-uefi-cd.bin -o $@ $(BUILD)/iso_root/
 
 $(OBJECT_C_FILES): $(BUILD)/%.c.o: %.c
+	@mkdir -p $(@D)
+	$(CC) $(CFLAGS) -c $< -o $@
+
+$(OBJECT_STUB_FILES): $(BUILD)/%.S.o: %.S
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@
 
