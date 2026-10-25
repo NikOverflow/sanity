@@ -1,7 +1,7 @@
 ARCH ?= x86_64
 
 CC := clang
-CFLAGS := -std=c17 -ffreestanding -fno-stack-protector -nostdlibinc -Wall -Wextra -Werror -I include/ -I arch/$(ARCH)/include/
+CFLAGS := -std=c23 -ffreestanding -fno-stack-protector -nostdlibinc -Wall -Wextra -Werror -I include/ -I arch/$(ARCH)/include/
 
 # TODO: change to lld (my llvm toolchain is half broken)
 LD := ld
