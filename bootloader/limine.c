@@ -1,4 +1,5 @@
 #include <stdint.h>
+
 #include <kernel/kmain.h>
 
 #include "limine/limine.h"
@@ -13,10 +14,15 @@ static volatile struct limine_framebuffer_request framebuffer_request = {
 };
 
 void limine_main() {
-    struct limine_framebuffer* framebuffer = framebuffer_request.response->framebuffers[0];
-    uint32_t *fb_ptr = framebuffer->address;
+    struct limine_framebuffer *fb = framebuffer_request.response->framebuffers[0];
+    Framebuffer framebuffer = {
+        .address = fb->address,
+        .width = fb->width,
+        .height = fb->height,
+        .pitch = fb->pitch
+    };
     BootInfo bootInfo = {
-        .address = fb_ptr
+        .framebuffer = &framebuffer
     };
     kmain(&bootInfo);
 }
