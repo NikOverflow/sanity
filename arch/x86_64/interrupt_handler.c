@@ -1,6 +1,9 @@
 #include <stdint.h>
 
-typedef struct {
+#include <boot/boot_info.h>
+#include <kernel/kprint.h>
+
+struct interrupt_frame {
     uint64_t r15;
     uint64_t r14;
     uint64_t r13;
@@ -18,14 +21,22 @@ typedef struct {
     uint64_t rax;
     uint64_t vector;
     uint64_t error_code;
-} InterruptFrame;
+    uint64_t rip;
+    uint64_t cs;
+    uint64_t rflags;
+    uint64_t rsp;
+    uint64_t ss;
+} __attribute__((packed));
 
-void interruptDispatch(InterruptFrame *interruptFrame) {
-    switch(interruptFrame->vector) {
+void interrupt_dispatch(struct interrupt_frame *interrupt_frame) {
+    kprintf("Interrupt occured: %d\n", interrupt_frame->vector);
+    switch(interrupt_frame->vector) {
         case 0:
             while(1) {
                 __asm__ volatile("cli; hlt");
             }
+            break;
+        default:
             break;
     }
 }

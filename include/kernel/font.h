@@ -7,7 +7,7 @@ static const struct {
   unsigned int 	 bytes_per_pixel; /* 2:RGB16, 3:RGB, 4:RGBA */
   char         	*comment;
   unsigned char	 pixel_data[1024 * 16 * 4 + 1];
-} gimpImage = {
+} gimp_image = {
   1024, 16, 4,
   "Created with GIMP by McModknower",
   "\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377\377"

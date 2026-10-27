@@ -2,4 +2,4 @@
 
 #include <boot/boot_info.h>
 
-void kmain(BootInfo *bootInfo);
+void kmain(struct boot_info *boot_info);

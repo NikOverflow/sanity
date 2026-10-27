@@ -1,5 +1,4 @@
 #pragma once
 
-#include <boot/boot_info.h>
-
-void kprint(char *string, Framebuffer *framebuffer);
+void kprint(char *string);
+void kprintf(char *format, ...);

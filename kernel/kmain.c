@@ -4,25 +4,31 @@
 #include <boot/arch.h>
 #include <kernel/kprint.h>
 
-void kmain(BootInfo *bootInfo) {
+struct framebuffer *framebuffer;
+
+void kmain(struct boot_info *boot_info) {
     // We are already in long mode
+    framebuffer = boot_info->framebuffer;
+
     arch_init();
 
-    kprint("Hello, world!", bootInfo->framebuffer);
-    kprint("\n", bootInfo->framebuffer);
-    kprint("sphinx of black quartz, judge my vow!", bootInfo->framebuffer);
-    kprint("\n", bootInfo->framebuffer);
-    kprint("SPHINX OF BLACK QUARTZ, JUDGE MY VOW!", bootInfo->framebuffer);
-    kprint("\n", bootInfo->framebuffer);
-    kprint("!\"#$%&'()*+,-./0123456789:;<=>?@[\\]^_`{|}~", bootInfo->framebuffer);
-    kprint("\nvoid kprint(char *string) {", bootInfo->framebuffer);
+    kprint("Hello, world!");
+    kprint("\n");
+    kprint("sphinx of black quartz, judge my vow!");
+    kprint("\n");
+    kprint("SPHINX OF BLACK QUARTZ, JUDGE MY VOW!");
+    kprint("\n");
+    kprint("!\"#$%&'()*+,-./0123456789:;<=>?@[\\]^_`{|}~");
+    kprint("\nvoid kprint(char *string) {");
+    kprint("\n");
+    kprintf("The best private key is: %d\n", 4);
 
+    __asm__ volatile("int $1");
+    __asm__ volatile("int $3");
+    __asm__ volatile("int $3");
+    __asm__ volatile("int $7");
     for(uint16_t i = 0; i < 256; i++) {
-        bootInfo->framebuffer->address[i] = 0xFF0000;
+        framebuffer->address[i] = 0xFF0000;
     }
-    volatile int a = 5;
-    volatile int b = 0;
-    volatile int c = a / b;
-    (void)c;
     while(1) {}
 }

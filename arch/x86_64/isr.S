@@ -1,14 +1,14 @@
 .global isr_stub_table
 
-.extern interruptDispatch
+.extern interrupt_dispatch
 
 .macro ISR int
 isr\int:
     .if (\int == 8) || (\int > 9 && \int < 15) || (\int == 17) || (\int == 21)
     push $\int
     .else
-    push $0
-    push $\int
+    pushq $0
+    pushq $\int
     .endif
     jmp interrupt_common
 .endmacro
@@ -34,7 +34,7 @@ interrupt_common:
     push %r14
     push %r15
     mov %rsp, %rdi
-    call interruptDispatch
+    call interrupt_dispatch
     pop %r15
     pop %r14
     pop %r13
@@ -50,6 +50,7 @@ interrupt_common:
     pop %rcx
     pop %rbx
     pop %rax
+    add $16, %rsp
     iretq
 
 .set i, 0

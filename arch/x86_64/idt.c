@@ -11,7 +11,7 @@
 #define IDT_FLAG_RING3   0b011
 #define IDT_FLAG_PRESENT 0b100
 
-typedef struct {
+struct idt_entry {
     uint16_t baseLow;
     uint16_t segmentSelector;
     uint8_t ist: 3;
@@ -22,37 +22,37 @@ typedef struct {
     uint16_t baseMiddle;
     uint32_t baseHigh;
     uint32_t reserved3;
-} __attribute__((packed)) idtEntry;
+} __attribute__((packed));
 
-typedef struct {
+struct idt_pointer {
     uint16_t limit;
-    idtEntry *base;
-} __attribute__((packed)) idtPointer;
+    struct idt_entry *base;
+} __attribute__((packed));
 
-extern void load_idt(idtPointer *idtrPointer);
+extern void load_idt(struct idt_pointer *idtr_pointer);
 
-idtEntry idtEntries[256];
-idtPointer idtr;
+struct idt_entry idt_entries[256];
+struct idt_pointer idtr;
 
 extern void *isr_stub_table[256];
 
-void set_idt_gate(uint8_t interrupt, void *base, uint16_t segmentSelector, uint8_t ist, uint8_t type, uint8_t flags) {
+void set_idt_gate(uint8_t interrupt, void *base, uint16_t segment_selector, uint8_t ist, uint8_t type, uint8_t flags) {
     uintptr_t address = (uintptr_t) base;
-    idtEntries[interrupt].baseLow = address & 0xFFFF;
-    idtEntries[interrupt].segmentSelector = segmentSelector;
-    idtEntries[interrupt].ist = ist;
-    idtEntries[interrupt].reserved = 0x00;
-    idtEntries[interrupt].type = type;
-    idtEntries[interrupt].reserved2 = 0x00;
-    idtEntries[interrupt].flags = flags;
-    idtEntries[interrupt].baseMiddle = (address >> 16) & 0xFFFF;
-    idtEntries[interrupt].baseHigh = (address >> 32) & 0xFFFFFFFF;
-    idtEntries[interrupt].reserved3 = 0x00;
+    idt_entries[interrupt].baseLow = address & 0xFFFF;
+    idt_entries[interrupt].segmentSelector = segment_selector;
+    idt_entries[interrupt].ist = ist;
+    idt_entries[interrupt].reserved = 0x00;
+    idt_entries[interrupt].type = type;
+    idt_entries[interrupt].reserved2 = 0x00;
+    idt_entries[interrupt].flags = flags;
+    idt_entries[interrupt].baseMiddle = (address >> 16) & 0xFFFF;
+    idt_entries[interrupt].baseHigh = (address >> 32) & 0xFFFFFFFF;
+    idt_entries[interrupt].reserved3 = 0x00;
 }
 
 void init_idt() {
-    idtr.limit = sizeof(idtEntries) - 1;
-    idtr.base = idtEntries;
+    idtr.limit = sizeof(idt_entries) - 1;
+    idtr.base = idt_entries;
 
     for(uint16_t i = 0; i < 256; i++) {
         set_idt_gate(i, isr_stub_table[i], 0x08, 0, IDT_TYPE_INTERRUPT, IDT_FLAG_PRESENT | IDT_FLAG_RING0);
