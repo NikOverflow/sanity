@@ -6,3 +6,4 @@ CheckOptions:
   readability-identifier-naming.VariableCase: lower_case
   readability-identifier-naming.TypedefCase: lower_case
   readability-identifier-naming.TypedefSuffix: _t
+  readability-identifier-naming.MemberCase: lower_case

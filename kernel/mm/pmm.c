@@ -50,7 +50,7 @@ void list_remove(struct Page *page, uint8_t order) {
 
 void init_pmm(struct memory_map *memory_map) {
     uint64_t highest_addr = 0;
-    for(size_t i = 0; i < memory_map->regionCount; i++) {
+    for(size_t i = 0; i < memory_map->region_count; i++) {
         struct memory_region *region = memory_map->regions[i];
         if(region->type != MEMORY_MAP_USABLE) continue;
         if(memory_map->offset == 0 && region->base == 0) { // Thanks limine bootloader for that.
@@ -67,7 +67,7 @@ void init_pmm(struct memory_map *memory_map) {
     printf("Page array size: %llu bytes\n", array_size);
 
     uint64_t metadata_phys_addr = 0; // TODO: There are many stupid firmware devs so I should make this better
-    for(size_t i = 0; i < memory_map->regionCount; i++) {
+    for(size_t i = 0; i < memory_map->region_count; i++) {
         struct memory_region *region = memory_map->regions[i];
         if(region->type != MEMORY_MAP_USABLE || region->length < array_size) continue;
         metadata_phys_addr = region->base;
@@ -86,7 +86,7 @@ void init_pmm(struct memory_map *memory_map) {
 
     uint64_t total_free_bytes = 0;
     printf("Usable Regions:\n");
-    for(size_t i = 0; i < memory_map->regionCount; i++) {
+    for(size_t i = 0; i < memory_map->region_count; i++) {
         struct memory_region *region = memory_map->regions[i];
         if(region->type != MEMORY_MAP_USABLE) continue;
         uint64_t base = PAGE_ALIGN_UP(region->base);
@@ -112,7 +112,7 @@ void init_pmm(struct memory_map *memory_map) {
             base += block_size;
         }
     }
-    printf("PMM Initialized. Available Memory: %llu MiB (%llu Pages free)\n", (total_free_bytes / (1024 * 1024)), (total_free_bytes / PAGE_SIZE));
+    printf("PMM Initialized. Available Memory: %llu MiB (%llu Pages free)\n", (total_free_bytes / (1024ULL * 1024ULL)), (total_free_bytes / PAGE_SIZE));
 }
 
 uint64_t alloc(uint8_t order) {

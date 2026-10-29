@@ -20,7 +20,7 @@ struct memory_region {
 };
 
 struct memory_map {
-    size_t regionCount;
+    size_t region_count;
     uintptr_t offset;
     struct memory_region **regions;
 };

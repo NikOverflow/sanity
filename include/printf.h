@@ -32,7 +32,7 @@
 ///////////////////////////////////////////////////////////////////////////////
 
 #ifndef _PRINTF_H_
-#define _PRINTF_H_
+#define _PRINTF_H_ // NOLINT
 
 #include <stdarg.h>
 #include <stddef.h>
@@ -48,7 +48,7 @@ extern "C" {
  * This function is declared here only. You have to write your custom implementation somewhere
  * \param character Character to output
  */
-void _putchar(char character);
+void _putchar(char character); // NOLINT
 
 
 /**
@@ -60,7 +60,7 @@ void _putchar(char character);
  * \return The number of characters that are written into the array, not counting the terminating null character
  */
 #define printf printf_
-int printf_(const char* format, ...);
+int printf_(const char* format, ...); // NOLINT
 
 
 /**
@@ -71,7 +71,7 @@ int printf_(const char* format, ...);
  * \return The number of characters that are WRITTEN into the buffer, not counting the terminating null character
  */
 #define sprintf sprintf_
-int sprintf_(char* buffer, const char* format, ...);
+int sprintf_(char* buffer, const char* format, ...); // NOLINT
 
 
 /**
@@ -86,8 +86,8 @@ int sprintf_(char* buffer, const char* format, ...);
  */
 #define snprintf  snprintf_
 #define vsnprintf vsnprintf_
-int  snprintf_(char* buffer, size_t count, const char* format, ...);
-int vsnprintf_(char* buffer, size_t count, const char* format, va_list va);
+int  snprintf_(char* buffer, size_t count, const char* format, ...); // NOLINT
+int vsnprintf_(char* buffer, size_t count, const char* format, va_list va); // NOLINT
 
 
 /**
@@ -97,7 +97,7 @@ int vsnprintf_(char* buffer, size_t count, const char* format, va_list va);
  * \return The number of characters that are WRITTEN into the buffer, not counting the terminating null character
  */
 #define vprintf vprintf_
-int vprintf_(const char* format, va_list va);
+int vprintf_(const char* format, va_list va); // NOLINT
 
 
 /**

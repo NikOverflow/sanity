@@ -27,13 +27,13 @@
 #define GDT_FLAG_GRANULARITY_4K 0b1000
 
 struct gdt_entry {
-    uint16_t limitLow;
-    uint16_t baseLow;
-    uint8_t baseMiddle;
+    uint16_t limit_low;
+    uint16_t base_low;
+    uint8_t base_middle;
     uint8_t access;
-    uint8_t limitHigh : 4;
+    uint8_t limit_high : 4;
     uint8_t flags     : 4;
-    uint8_t baseHigh;
+    uint8_t base_high;
 } __attribute__((packed));
 
 struct gdt_tss_descriptor {
@@ -70,13 +70,13 @@ struct tss_entry tss;
 struct gdt_pointer gdtr;
 
 void set_gdt_descriptor(uint8_t index, uint32_t base, uint32_t limit, uint8_t access, uint8_t flags) {
-    gdt_entries[index].limitLow = limit & 0xFFFF;
-    gdt_entries[index].baseLow = base & 0xFFFF;
-    gdt_entries[index].baseMiddle = (base >> 16) & 0xFF;
+    gdt_entries[index].limit_low = limit & 0xFFFF;
+    gdt_entries[index].base_low = base & 0xFFFF;
+    gdt_entries[index].base_middle = (base >> 16) & 0xFF;
     gdt_entries[index].access = access;
-    gdt_entries[index].limitHigh = (limit >> 16) & 0xF;
+    gdt_entries[index].limit_high = (limit >> 16) & 0xF;
     gdt_entries[index].flags = flags;
-    gdt_entries[index].baseHigh = (base >> 24) & 0xFF;
+    gdt_entries[index].base_high = (base >> 24) & 0xFF;
 }
 
 extern void load_gdt(struct gdt_pointer *gdtr_pointer);

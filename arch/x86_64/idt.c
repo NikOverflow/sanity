@@ -12,15 +12,15 @@
 #define IDT_FLAG_PRESENT 0b100
 
 struct idt_entry {
-    uint16_t baseLow;
-    uint16_t segmentSelector;
+    uint16_t base_low;
+    uint16_t segment_selector;
     uint8_t ist: 3;
     uint8_t reserved: 5;
     uint8_t type: 4;
     uint8_t reserved2: 1;
     uint8_t flags: 3;
-    uint16_t baseMiddle;
-    uint32_t baseHigh;
+    uint16_t base_middle;
+    uint32_t base_high;
     uint32_t reserved3;
 } __attribute__((packed));
 
@@ -38,15 +38,15 @@ extern void *isr_stub_table[256];
 
 void set_idt_gate(uint8_t interrupt, void *base, uint16_t segment_selector, uint8_t ist, uint8_t type, uint8_t flags) {
     uintptr_t address = (uintptr_t) base;
-    idt_entries[interrupt].baseLow = address & 0xFFFF;
-    idt_entries[interrupt].segmentSelector = segment_selector;
+    idt_entries[interrupt].base_low = address & 0xFFFF;
+    idt_entries[interrupt].segment_selector = segment_selector;
     idt_entries[interrupt].ist = ist;
     idt_entries[interrupt].reserved = 0x00;
     idt_entries[interrupt].type = type;
     idt_entries[interrupt].reserved2 = 0x00;
     idt_entries[interrupt].flags = flags;
-    idt_entries[interrupt].baseMiddle = (address >> 16) & 0xFFFF;
-    idt_entries[interrupt].baseHigh = (address >> 32) & 0xFFFFFFFF;
+    idt_entries[interrupt].base_middle = (address >> 16) & 0xFFFF;
+    idt_entries[interrupt].base_high = (address >> 32) & 0xFFFFFFFF;
     idt_entries[interrupt].reserved3 = 0x00;
 }
 

@@ -3,9 +3,10 @@ rwildcard = $(filter $(subst *,%,$(notdir $1)),$(wildcard $(dir $1)*)) $(foreach
 ARCH ?= x86_64
 
 CC := clang
-CFLAGS := -std=c17 -ffreestanding -fno-stack-protector -nostdlibinc -Wall -Wextra -Werror -I include/ -I arch/$(ARCH)/include/
+CFLAGS := -std=c17 -ffreestanding -fno-stack-protector -nostdlibinc -Wall -Wextra -Werror -I include/ -I arch/$(ARCH)/include/ -isystem limine/
 
 CLANG_TIDY := clang-tidy
+CLANG_TIDY_FLAGS := --quiet
 
 # TODO: change to lld (my llvm toolchain is half broken)
 LD := ld
@@ -35,7 +36,7 @@ run: $(ISO_FILE)
 	qemu-system-$(ARCH) -m 512M -drive if=pflash,format=raw,readonly=on,file=limine/code.fd -drive if=pflash,format=raw,file=limine/vars.fd -cdrom $<
 
 lint:
-	$(CLANG_TIDY) $(SOURCE_C_FILES) -- $(CFLAGS)
+	$(CLANG_TIDY) $(CLANG_TIDY_FLAGS) $(SOURCE_C_FILES) -- $(CFLAGS)
 
 clean:
 	@rm -rf $(BUILD)

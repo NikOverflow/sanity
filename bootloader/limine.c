@@ -3,7 +3,7 @@
 
 #include <kernel/kmain.h>
 
-#include "../limine/limine.h"
+#include <limine.h>
 
 __attribute__((used, section(".limine_requests")))
 static volatile uint64_t limine_base_revision[] = LIMINE_BASE_REVISION(6);
@@ -37,7 +37,7 @@ void limine_main() {
     }
 
     struct memory_map memory_map = {
-        .regionCount = memmap->entry_count,
+        .region_count = memmap->entry_count,
         .offset = hhdm->offset,
         .regions = (struct memory_region**) memmap->entries
     };
