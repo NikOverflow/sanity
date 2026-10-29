@@ -7,6 +7,8 @@
 
 struct framebuffer *framebuffer;
 
+extern void enter_usermode(void *entry, uint64_t rsp);
+
 void kmain(struct boot_info *boot_info) {
     // We are already in long mode
     framebuffer = boot_info->framebuffer;
