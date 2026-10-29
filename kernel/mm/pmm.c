@@ -9,8 +9,8 @@
 #define PAGE_RESERVED   (1 << 0)
 #define PAGE_FREE       (1 << 1)
 
-#define ALIGN_UP(value, alignment) (((value) + alignment - 1) & ~(alignment - 1))
-#define ALIGN_DOWN(value, alignment) ((value) & ~(alignment - 1))
+#define PAGE_ALIGN_UP(value) (((value) + PAGE_SIZE - 1) & ~(PAGE_SIZE - 1))
+#define PAGE_ALIGN_DOWN(value) ((value) & ~(PAGE_SIZE - 1))
 
 struct Page {
     uint8_t order;
@@ -63,7 +63,7 @@ void init_pmm(struct memory_map *memory_map) {
     total_pages = highest_addr / PAGE_SIZE;
     printf("Total Pages: %llu\n", total_pages);
 
-    size_t array_size = ALIGN_UP(total_pages * sizeof(struct Page), PAGE_SIZE);
+    size_t array_size = PAGE_ALIGN_UP(total_pages * sizeof(struct Page));
     printf("Page array size: %llu bytes\n", array_size);
 
     uint64_t metadata_phys_addr = 0; // TODO: There are many stupid firmware devs so I should make this better
@@ -89,8 +89,8 @@ void init_pmm(struct memory_map *memory_map) {
     for(size_t i = 0; i < memory_map->regionCount; i++) {
         struct memory_region *region = memory_map->regions[i];
         if(region->type != MEMORY_MAP_USABLE) continue;
-        uint64_t base = ALIGN_UP(region->base, PAGE_SIZE);
-        uint64_t end = ALIGN_DOWN(region->base + region->length, PAGE_SIZE);
+        uint64_t base = PAGE_ALIGN_UP(region->base);
+        uint64_t end = PAGE_ALIGN_DOWN(region->base + region->length);
         printf("0x%llx - 0x%llx\n", base, end);
 
         while(base < end) {

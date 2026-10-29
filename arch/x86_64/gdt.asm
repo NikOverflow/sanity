@@ -1,6 +1,7 @@
 default rel
 
 global load_gdt
+global load_tss
 
 load_gdt:
     lgdt [rdi]
@@ -17,4 +18,9 @@ load_gdt:
     retfq
 
 .reload_cs:
+    ret
+
+load_tss:
+    mov ax, di
+    ltr ax
     ret

@@ -2,4 +2,5 @@
 
 #include <stddef.h>
 
-void *memcpy(void *destination, void *source, size_t length);
+void *memcpy(void *dest, void *src, size_t n);
+void *memset(void *dest, int value, size_t n);

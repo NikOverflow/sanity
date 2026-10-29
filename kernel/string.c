@@ -1,10 +1,20 @@
 #include <string.h>
 
-void *memcpy(void *destination, void *source, size_t length) {
-    char* dest = (char*) destination;
-    char* src = (char*) source;
-    for(size_t i = 0; i < length; i++) {
-        dest[i] = src[i];
+#include <stdint.h>
+
+void *memcpy(void *dest, void *src, size_t n) {
+    uint8_t *dest_ptr = dest;
+    uint8_t *src_ptr = src;
+    for(size_t i = 0; i < n; i++) {
+        dest_ptr[i] = src_ptr[i];
     }
-    return destination;
+    return dest;
+}
+
+void *memset(void *dest, int value, size_t n) {
+    uint8_t *ptr = dest;
+    for(size_t i = 0; i < n; i++) {
+        ptr[i] = (uint8_t) value;
+    }
+    return dest;
 }
