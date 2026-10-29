@@ -32,7 +32,7 @@ build: $(KERNEL_FILE)
 iso: $(ISO_FILE)
 
 run: $(ISO_FILE)
-	qemu-system-$(ARCH) -drive if=pflash,format=raw,readonly=on,file=limine/code.fd -drive if=pflash,format=raw,file=limine/vars.fd -cdrom $<
+	qemu-system-$(ARCH) -m 512M -drive if=pflash,format=raw,readonly=on,file=limine/code.fd -drive if=pflash,format=raw,file=limine/vars.fd -cdrom $<
 
 lint:
 	$(CLANG_TIDY) $(SOURCE_C_FILES) -- $(CFLAGS)

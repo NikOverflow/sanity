@@ -2,7 +2,8 @@
 
 #include <kernel/kmain.h>
 #include <boot/arch.h>
-#include <kernel/kprint.h>
+#include <kernel/mm/pmm.h>
+#include <printf.h>
 
 struct framebuffer *framebuffer;
 
@@ -11,24 +12,32 @@ void kmain(struct boot_info *boot_info) {
     framebuffer = boot_info->framebuffer;
 
     arch_init();
+    init_pmm(boot_info->memory_map);
 
-    kprint("Hello, world!");
-    kprint("\n");
-    kprint("sphinx of black quartz, judge my vow!");
-    kprint("\n");
-    kprint("SPHINX OF BLACK QUARTZ, JUDGE MY VOW!");
-    kprint("\n");
-    kprint("!\"#$%&'()*+,-./0123456789:;<=>?@[\\]^_`{|}~");
-    kprint("\nvoid kprint(char *string) {");
-    kprint("\n");
-    kprintf("The best private key is: %d\n", 4);
+    uint64_t page = alloc_page();
+    printf("Allocated page 1 at 0x%lx\n", page);
+    uint64_t page2 = alloc_page();
+    printf("Allocated page 2 at 0x%lx\n", page2);
+    free_page(page2);
+    printf("Freed page 2\n");
+    free_page(page);
+    printf("Freed page 1\n");
+    page = alloc_page();
+    printf("Allocated page 1 at 0x%lx\n", page);
+    volatile uint64_t *ptr = (volatile uint64_t *)(page + boot_info->memory_map->offset);
+    *ptr = 0xDEADBEEF;
+    printf("Wrote value: 0x%x at 0x%lx successfully\n", *ptr, page);
+
+    printf("Hello, world!\n");
+    printf("sphinx of black quartz, judge my vow!\n");
+    printf("SPHINX OF BLACK QUARTZ, JUDGE MY VOW!\n");
+    printf("!\"#$%&'()*+,-./0123456789:;<=>?@[\\]^_`{|}~\n");
+    printf("void kprint(char *string) {\n");
+    printf("The best private key is: %d\n", 4);
 
     __asm__ volatile("int $1");
     __asm__ volatile("int $3");
     __asm__ volatile("int $3");
     __asm__ volatile("int $7");
-    for(uint16_t i = 0; i < 256; i++) {
-        framebuffer->address[i] = 0xFF0000;
-    }
     while(1) {}
 }
