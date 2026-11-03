@@ -12,3 +12,11 @@ _______________________________________
                ||----w |
                ||     ||
 ```
+
+## Building
+### Nix
+If you use Nix with flakes enabled, `flake.nix` provides a dev shell with the whole toolchain:
+```bash
+nix develop
+./setup.sh # needs only to be run once
+```
