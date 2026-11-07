@@ -9,6 +9,22 @@ struct framebuffer *framebuffer;
 
 extern void enter_usermode(void *entry, uint64_t rsp);
 
+void userspace_test() {
+    __asm__ volatile(
+        "mov $1337, %%rax\n\t"
+        "mov $42, %%rdi\n\t"
+        "int $0x80"
+        :
+        :
+        : "rax", "rdi"
+    );
+    volatile int a = 5;
+    volatile int b = 0;
+    volatile int c = a / b;
+    (void)c;
+    while(1) {}
+}
+
 void kmain(struct boot_info *boot_info) {
     // We are already in long mode
     framebuffer = boot_info->framebuffer;
