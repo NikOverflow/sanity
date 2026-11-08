@@ -8,7 +8,7 @@ DEBUG_KERNEL_FILE := $(BUILD)/sanity-$(ARCH)-debug.elf
 ISO_FILE := $(BUILD)/sanity-$(ARCH).iso
 
 CC := clang
-CFLAGS := -std=c17 -ffreestanding -nostdlibinc -MMD -MP -g -fno-common -fno-stack-protector -fPIE -ffunction-sections -fdata-sections -Wall -Wextra -Werror -DARCHITECTURE=$(ARCH) -I include/ -isystem limine/
+CFLAGS := -std=c23 -ffreestanding -nostdlibinc -MMD -MP -g -fno-common -fno-stack-protector -fPIE -ffunction-sections -fdata-sections -Wall -Wextra -Wpedantic -Wno-overlength-strings -Wshadow -Werror -DARCHITECTURE=$(ARCH) -I include/ -isystem limine/
 
 CLANG_TIDY := clang-tidy
 CLANG_TIDY_FLAGS := --quiet

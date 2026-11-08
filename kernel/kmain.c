@@ -27,7 +27,7 @@ void userspace_test() {
 
 void kmain(struct boot_info *boot_info) {
     // We are already in long mode
-    framebuffer = boot_info->framebuffer;
+    //framebuffer = boot_info->framebuffer;
 
     arch_init();
     init_pmm(boot_info->memory_map);
