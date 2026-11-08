@@ -2,37 +2,42 @@ rwildcard = $(filter $(subst *,%,$(notdir $1)),$(wildcard $(dir $1)*)) $(foreach
 
 ARCH ?= x86_64
 
+BUILD := build
+KERNEL_FILE := $(BUILD)/sanity-$(ARCH).elf
+DEBUG_KERNEL_FILE := $(BUILD)/sanity-$(ARCH)-debug.elf
+ISO_FILE := $(BUILD)/sanity-$(ARCH).iso
+
 CC := clang
-CFLAGS := -std=c17 -ffreestanding -nostdlibinc -fno-stack-protector -fPIC -Wall -Wextra -Werror -DARCHITECTURE=$(ARCH) -I include/ -isystem limine/
+CFLAGS := -std=c17 -ffreestanding -nostdlibinc -MMD -MP -g -fno-common -fno-stack-protector -fPIE -ffunction-sections -fdata-sections -Wall -Wextra -Werror -DARCHITECTURE=$(ARCH) -I include/ -isystem limine/
 
 CLANG_TIDY := clang-tidy
 CLANG_TIDY_FLAGS := --quiet
 
 # TODO: change to lld (my llvm toolchain is half broken)
 LD := ld
-LDFLAGS := -T targets/$(ARCH).ld
+LDFLAGS := --gc-sections --entry limine_main -pie --no-dynamic-linker -T targets/$(ARCH).ld
 
-NASM := nasm
-NASM_FLAGS := -f elf64
+# TODO: change to llvm-objcopy (my llvm toolchain is half broken)
+OBJCOPY := objcopy
+OBJCOPY_FLAGS := --strip-all
 
 QEMU_FLAGS := -m 512M -drive if=pflash,format=raw,readonly=on,file=limine/code.fd -drive if=pflash,format=raw,file=limine/vars.fd
 
-BUILD := build
-KERNEL_FILE := $(BUILD)/sanity-$(ARCH).elf
-ISO_FILE := $(BUILD)/sanity-$(ARCH).iso
+GDB := gdb
+GDB_FLAGS := -q -se $(DEBUG_KERNEL_FILE) -ex "target remote localhost:1234"
 
 include targets/$(ARCH).mk
 
 SOURCE_C_FILES := $(call rwildcard,bootloader/*.c) $(call rwildcard,kernel/*.c) $(filter %.c,$(ARCH_SOURCE_FILES))
 SOURCE_STUB_FILES := $(filter %.S,$(ARCH_SOURCE_FILES))
-SOURCE_ASM_FILES := $(filter %.asm,$(ARCH_SOURCE_FILES))
 
 OBJECT_C_FILES := $(patsubst %, $(BUILD)/%.o, $(SOURCE_C_FILES))
 OBJECT_STUB_FILES := $(patsubst %, $(BUILD)/%.o, $(SOURCE_STUB_FILES))
-OBJECT_ASM_FILES := $(patsubst %, $(BUILD)/%.o, $(SOURCE_ASM_FILES))
 OBJECT_FILES := $(OBJECT_C_FILES) $(OBJECT_STUB_FILES) $(OBJECT_ASM_FILES)
 
-.PHONY: all build iso run lint clang clean
+-include $(OBJECT_FILES:.o=.d)
+
+.PHONY: all build iso run debug lint clang clean
 
 all: iso
 
@@ -42,6 +47,12 @@ iso: $(ISO_FILE)
 
 run: $(ISO_FILE)
 	$(QEMU) $(QEMU_FLAGS) -cdrom $<
+
+debug: $(ISO_FILE)
+	setsid $(QEMU) $(QEMU_FLAGS) -s -S -cdrom $< & \
+	PID=$$!; \
+	$(GDB) $(GDB_FLAGS); \
+	kill -9 $$PID
 
 lint:
 	$(CLANG_TIDY) $(CLANG_TIDY_FLAGS) $(SOURCE_C_FILES) -- $(CFLAGS)
@@ -70,10 +81,9 @@ $(OBJECT_STUB_FILES): $(BUILD)/%.S.o: %.S
 	@mkdir -p $(@D)
 	$(CC) $(CFLAGS) -c $< -o $@
 
-$(OBJECT_ASM_FILES): $(BUILD)/%.asm.o: %.asm
-	@mkdir -p $(@D)
-	$(NASM) $(NASM_FLAGS) -o $@ $<
-
-$(KERNEL_FILE): $(OBJECT_FILES)
+$(DEBUG_KERNEL_FILE): $(OBJECT_FILES)
 	@mkdir -p $(@D)
 	$(LD) $(LDFLAGS) -o $@ $(OBJECT_FILES)
+
+$(KERNEL_FILE): $(DEBUG_KERNEL_FILE)
+	$(OBJCOPY) $(OBJCOPY_FLAGS) $< $@
