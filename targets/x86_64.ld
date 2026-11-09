@@ -26,6 +26,10 @@ SECTIONS {
         *(.data .data.*)
     } :data
 
+    .dynamic : {
+        *(.dynamic)
+    } :data :dynamic
+
     .bss : {
         *(.bss .bss.*)
     } :data

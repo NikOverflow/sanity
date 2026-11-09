@@ -9,16 +9,15 @@ ISO_FILE := $(BUILD)/sanity-$(ARCH).iso
 
 CC := clang
 CFLAGS := -std=c23 -ffreestanding -nostdlibinc -MMD -MP -g -fno-common -fno-stack-protector -fPIE -ffunction-sections -fdata-sections -Wall -Wextra -Wpedantic -Wno-overlength-strings -Wshadow -Werror -DARCHITECTURE=$(ARCH) -I include/ -isystem limine/
+COMPILE_FLAGS_STRIP := -MMD -MP
 
 CLANG_TIDY := clang-tidy
 CLANG_TIDY_FLAGS := --quiet
 
-# TODO: change to lld (my llvm toolchain is half broken)
-LD := ld
+LD := ld.lld
 LDFLAGS := --gc-sections --entry limine_main -pie --no-dynamic-linker -T targets/$(ARCH).ld
 
-# TODO: change to llvm-objcopy (my llvm toolchain is half broken)
-OBJCOPY := objcopy
+OBJCOPY := llvm-objcopy
 OBJCOPY_FLAGS := --strip-all
 
 QEMU_FLAGS := -m 512M -drive if=pflash,format=raw,readonly=on,file=limine/code.fd -drive if=pflash,format=raw,file=limine/vars.fd
@@ -59,7 +58,8 @@ lint:
 
 clang:
 	$(file > compile_flags.txt)
-	$(foreach flag,$(CFLAGS),$(file >> compile_flags.txt,$(flag)))
+	$(foreach flag,$(filter-out $(COMPILE_FLAGS_STRIP),$(CFLAGS)),$(file >> compile_flags.txt,$(flag)))
+	@echo compile_flags.txt updated
 
 clean:
 	@rm -rf $(BUILD)
