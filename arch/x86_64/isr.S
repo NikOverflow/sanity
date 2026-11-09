@@ -61,6 +61,7 @@ ISR %i
 .endr
 .noaltmacro
 
+.section .data
 isr_stub_table:
 .set i, 0
 .altmacro

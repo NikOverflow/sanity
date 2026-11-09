@@ -61,13 +61,14 @@ static const char *exceptions[] = {
 
 void interrupt_dispatch(struct interrupt_frame *interrupt_frame) {
     uint64_t vector = interrupt_frame->vector;
+    uint64_t ring = interrupt_frame->cs & 0x03;
     printf("CPU EXCEPTION: ");
     if(vector < 32) {
         printf("%s", exceptions[vector]);
     } else {
         printf("User Defined");
     }
-    printf(" (Vector: %d, Error Code: %d)\n", vector, interrupt_frame->error_code);
+    printf(" (Vector: %d, Error Code: %d, Ring: %llu)\n", vector, interrupt_frame->error_code, ring);
     uint64_t fault_addr = 0;
     switch(vector) {
         case 0:
@@ -86,6 +87,9 @@ void interrupt_dispatch(struct interrupt_frame *interrupt_frame) {
         case 14:
             __asm__ volatile("mov %%cr2, %0" : "=r"(fault_addr));
             printf("Page Fault at Virtual Address: %lx\n", fault_addr);
+        case 128:
+            printf("Syscall triggered!\n");
+            break;
         default:
             break;
     }

@@ -55,6 +55,10 @@ void init_idt() {
     idtr.base = idt_entries;
 
     for(uint16_t i = 0; i < 256; i++) {
+        if(i == 0x80) {
+            set_idt_gate(i, isr_stub_table[i], 0x08, 0, IDT_TYPE_INTERRUPT, IDT_FLAG_PRESENT | IDT_FLAG_RING3);
+            continue;
+        }
         set_idt_gate(i, isr_stub_table[i], 0x08, 0, IDT_TYPE_INTERRUPT, IDT_FLAG_PRESENT | IDT_FLAG_RING0);
     }
     load_idt(&idtr);

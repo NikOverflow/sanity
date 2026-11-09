@@ -10,16 +10,13 @@ static volatile uint64_t limine_base_revision[] = LIMINE_BASE_REVISION(6);
 __attribute__((used, section(".limine_requests")))
 
 static volatile struct limine_framebuffer_request framebuffer_request = {
-    .id = LIMINE_FRAMEBUFFER_REQUEST_ID,
-    .revision = 6
+    .id = LIMINE_FRAMEBUFFER_REQUEST_ID
 };
 static volatile struct limine_memmap_request memmap_request = {
-    .id = LIMINE_MEMMAP_REQUEST_ID,
-    .revision = 6
+    .id = LIMINE_MEMMAP_REQUEST_ID
 };
 static volatile struct limine_hhdm_request hhdm_request = {
-    .id = LIMINE_HHDM_REQUEST_ID,
-    .revision = 6
+    .id = LIMINE_HHDM_REQUEST_ID
 };
 
 void limine_main() {
@@ -41,14 +38,14 @@ void limine_main() {
         .offset = hhdm->offset,
         .regions = (struct memory_region**) memmap->entries
     };
-    struct framebuffer framebuffer = {
+    framebuffer = &(struct framebuffer) {
         .address = fb->address,
         .width = fb->width,
         .height = fb->height,
         .pitch = fb->pitch
     };
     struct boot_info boot_info = {
-        .framebuffer = &framebuffer,
+        .framebuffer = framebuffer,
         .memory_map = &memory_map
     };
     kmain(&boot_info);
