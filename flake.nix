@@ -5,19 +5,23 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-26.05";
   };
 
-  outputs = {nixpkgs, ...}: let
-    system = "x86_64-linux";
-    pkgs = import nixpkgs { inherit system; };
-  in {
-    devShells.${system}.default = pkgs.mkShellNoCC {
-      packages = with pkgs; [
-        wget
-        gnumake
-        nasm
-        qemu_full
-        llvmPackages.clang-unwrapped
-        xorriso
-      ];
+  outputs =
+    { nixpkgs, ... }:
+    let
+      system = "x86_64-linux";
+      pkgs = import nixpkgs { inherit system; };
+    in
+    {
+      devShells.${system}.default = pkgs.mkShellNoCC {
+        packages = with pkgs; [
+          wget
+          gnumake
+          llvmPackages.clang-unwrapped
+          llvmPackages.bintools-unwrapped
+          xorriso
+          qemu_full
+          gdb
+        ];
+      };
     };
-  };
 }
